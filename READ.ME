@@ -4,7 +4,6 @@ Instructions:
 -Alternatively, you can simply install python and pytest (versions described in mac-env.txt)
 -To run, cd into the project directory (where domain.py and test_domain.py reside) and enter $ pytest -vv
 
-
 Miscellaneous:
 
 I want to give a description of my thought process when solving this problem, which I hope will give you an idea of what sort of candidate I am:
@@ -21,4 +20,5 @@ After reading about UUIDs, I decided to dig a bit more on the algorithms used to
 I also learned that Python has a UUID module included in its Standard Library, according to the specifications above. 
 UUIDs are 128-bit numbers, with various “versions” corresponding to different algorithms used to generate identifiers. Version 1 uses the system’s time stamp (among other things), but since our resolution is only 32 bits (not including the 16 bits we need to identify the domain id), I anticipated this might cause collisions. Versions 3 and 5 rely on MD5 and SHA-1 hashing of name spaces. Version 4 consists mostly of randomly generated numbers, but with certain bits derived from a time-stamp (and these occur in the first 32 bits, and therefore are not lost by truncation). I liked this solution a lot, and ultimately decided to implement it. 
 Another competing solution was simply generating 6 hex digits of random numbers, followed by 2 digits of serialized numbers. They’re actually very similar solutions-- both methods use the operating system’s random number generator (or fall back on the python’s if this can’t be imported), and use a secondary measure to ensure uniqueness (time stamp or counter). I chose uuid4 to take advantage of the already-existing Standard Library implementation, and because it is a standard that is relied upon globally. 
+
 I hope my explanation was at least somewhat insightful! The problem was fun for me to solve, and I learned a lot in the process.
