@@ -1,0 +1,24 @@
+Instructions:
+
+-For best results, install the conda environment detailed in mac-env.txt
+-Alternatively, you can simply install python and pytest (versions described in mac-env.txt)
+-To run, cd into the project directory (where domain.py and test_domain.py reside) and enter $ pytest -vv
+
+
+Miscellaneous:
+
+I want to give a description of my thought process when solving this problem, which I hope will give you an idea of what sort of candidate I am:
+
+To begin with, I wasn’t outright familiar with the content of the problem, so I decided to read about MAC addresses and UUIDs to give some important background. My experience with hexadecimal was also limited, but the phrasing of the question led me to believe that a 5-digit decimal number would convert to 4 hex characters; I confirmed that this was true.
+
+Therefore, it became clear that the most important concerns of the problem were: 1) Creating unique IDs with extremely low chance of collision, and 2) doing so in just 32 bits (not including the first 16 bits of the domain ID).  
+
+Initially, I thought it might be possible to use a good hash function to address these problems, since avoiding collisions is one of the things hash functions excel at. Hash functions are meant to deal with a large domain of keys, mapped to a smaller range of hash values. Our scenario doesn’t involve keys, but we could either hash values from a counter or a random number generator. I think either of these solutions would have been sufficient, but they have weaknesses: hashing simple counter values is probably not secure (some search engines can even give the result of an SHA-1 hash of the integer 1, for example), and hashing random values is not convincingly better than just using a random number generator in the first place. I decided to look at other potential solutions.  
+
+I also considered simply serializing the MAC addresses, since this would avoid collisions absolutely. Although I am not a security expert, this again raised the hypothetical question of security, and I decided to discard the solution.
+
+After reading about UUIDs, I decided to dig a bit more on the algorithms used to create these identifiers. I found this resource: https://tools.ietf.org/html/rfc4122.html 
+I also learned that Python has a UUID module included in its Standard Library, according to the specifications above. 
+UUIDs are 128-bit numbers, with various “versions” corresponding to different algorithms used to generate identifiers. Version 1 uses the system’s time stamp (among other things), but since our resolution is only 32 bits (not including the 16 bits we need to identify the domain id), I anticipated this might cause collisions. Versions 3 and 5 rely on MD5 and SHA-1 hashing of name spaces. Version 4 consists mostly of randomly generated numbers, but with certain bits derived from a time-stamp (and these occur in the first 32 bits, and therefore are not lost by truncation). I liked this solution a lot, and ultimately decided to implement it. 
+Another competing solution was simply generating 6 hex digits of random numbers, followed by 2 digits of serialized numbers. They’re actually very similar solutions-- both methods use the operating system’s random number generator (or fall back on the python’s if this can’t be imported), and use a secondary measure to ensure uniqueness (time stamp or counter). I chose uuid4 to take advantage of the already-existing Standard Library implementation, and because it is a standard that is relied upon globally. 
+I hope my explanation was at least somewhat insightful! The problem was fun for me to solve, and I learned a lot in the process.
