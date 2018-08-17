@@ -27,3 +27,8 @@ class Domain:
         mac = ':'.join(temp[i:i+2] for i in range(0, len(temp), 2))
         return mac
 
+    
+if __name__ == "__main__":
+    my_domain = Domain(43690, 'Domain1')
+    my_domain.generate_mac_address()
+    print(my_domain.mac_addresses)
