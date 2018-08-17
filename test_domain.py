@@ -4,8 +4,13 @@ from domain import Domain
 
 @pytest.fixture()
 def sample_domain():
-    my_domain = Domain(4096, 'Teagan')
+    my_domain = Domain(43690, 'Teagan')
     return my_domain
+
+
+@pytest.fixture(params=[43690, 48059, 52428])
+def ids(request):
+    return request.param
 
 
 def test_int_to_hex(sample_domain):
@@ -32,4 +37,20 @@ def test_generate_uuid4(sample_domain):
 
 
 def test_format_mac_address(sample_domain):
+    """Tests formatted addresses are correctly delimited by a colon."""
     assert sample_domain.format_mac_address('AAAA', 'BBCCDDEE') == 'AA:AA:BB:CC:DD:EE'
+
+
+def test_domain_functional(ids):
+    """
+    Tests instantiation of three test domains:
+        -checks number of mac addresses generated per instance
+        -checks for uniqueness
+    """
+    my_domain = Domain(ids, 'Functional Domain Test')
+
+    my_domain.generate_mac_address()
+    assert len(my_domain.mac_addresses) == 10
+    # use set function to determine uniqueness
+    assert len(set(my_domain.mac_addresses)) == 10
+

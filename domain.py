@@ -2,18 +2,16 @@ import uuid
 
 
 class Domain:
-    def __init__(self, id=None, name=None):
+    def __init__(self, id=0, name=None):
         self.id = id
         self.name = name
-        self.mac_address = self.generate_mac_address()
+        self.mac_addresses = []
 
     def generate_mac_address(self, num_of_ids=10):
-        mac_list = []
         for i in range(num_of_ids):
             id_hex = self.int_to_hex(self.id)
             uuid_hex = self.generate_uuid4()
-            mac_list.append(self.format_mac_address(id_hex, uuid_hex))
-        return mac_list
+            self.mac_addresses.append(self.format_mac_address(id_hex, uuid_hex))
 
     def int_to_hex(self, my_id=0):
         # formats id as hex with leading zeroes (if applicable)
@@ -25,7 +23,7 @@ class Domain:
 
     def format_mac_address(self, id_hex, uuid_hex):
         # concatenates domain id and uuid4, then formats with colon
-        li = id_hex + uuid_hex
-        mac = ':'.join((li[0:2], li[2:4], li[4:6], li[6:8], li[8:10], li[10:12]))
+        temp = id_hex + uuid_hex
+        mac = ':'.join(temp[i:i+2] for i in range(0, len(temp), 2))
         return mac
 
